@@ -1,0 +1,229 @@
+{
+    "swagger": "2.0",
+    "host": "localhost:8000",
+    "basePath": "/api/",
+    "info": {
+        "version": "1.0.0",
+        "title": "Simple API",
+        "description": "A simple API to learn how to write OpenAPI Specification"
+    },
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "oauth": {
+            "tokenUrl": "http://auth.ibtspl.com/oauth2/",
+            "flow": "password",
+            "scopes": {
+                "read": "read users",
+                "write": "create users",
+                "update": "update users",
+                "delete": "delete users",
+                "superuser": "super user permission"
+            },
+            "type": "oauth2"
+        }
+    },
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "age": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "required": [
+                "firstName",
+                "lastName",
+                "username",
+                "age"
+            ]
+        },
+        "UserWithExtraFields": {
+            "type" : "array"
+            "items" : {
+                "$ref": "#/definitions/User"
+            }
+        }
+    },
+    "parameters": {
+        "CreateNewPersonParameter": {
+            "name": "person",
+            "in": "body",
+            "description": "The person to create.",
+            "schema": {
+                 "$ref": "#/definitions/User"
+            }
+        }
+    },
+    "responses": {
+        "CreateNewPersonResponse": {
+            "description": "Success Response",
+            "schema": {
+                "$ref": "#/definitions/UserWithExtraFields"
+            }
+        }
+    },
+    "paths": {
+        "/person/create/": {
+            "post": {
+                "operationId": "create_person",
+                "summary": "Create New Person",
+                "description": "Creates a new person and return the user object. This api is not idempotent.",
+                "security": [
+                    {
+                        "oauth": [
+                            "superuser"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/CreateNewPersonParameter"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "$ref": "#/responses/CreateNewPersonResponse"
+                    }
+                }
+            }
+        },
+        "/person/": {
+            "get": {
+                "operationId": "get_person",
+                "summary": "Get list of Persons",
+                "parameters": [
+					{
+						"name": "offset",
+						"in": "query",
+						"description": "Some description for offset",
+						"type": "integer"
+					},
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "Some description for limit",
+						"type": "integer"
+					}
+				],
+				"responses": {
+                    "201": {
+                       "$ref": "#/definitions/UserWithExtraFields"
+                    }
+                }
+            }
+        },
+        "/person/{username}": {
+            "get": {
+                "operationId": "get_particular_person",
+                "summary": "Get list of Persons",
+                "description": "person particular"
+                "parameters": [
+					{
+						"name": "username",
+						"in": "path",
+						"required" : true,
+						"description": "Some description for offset",
+						"type": "string"
+					}
+				],
+				"responses": {
+                    "201": {
+                    "schema": {
+                 "$ref": "#/definitions/User"
+            }
+                        
+                    }
+                }
+            }
+        }
+        "/person/{username}/": {
+            "put": {
+                "operationId": "get_particular_person",
+                "summary": "Get list of Persons",
+                "description": "person particular",
+                       "parameters": [
+                    
+                    {
+						"name": "username",
+						"in": "path",
+						"required" : true,
+						"description": "Some description for offset",
+						"type": "string"
+					},
+					{
+                        "name": "person",
+                        "in": "body",
+                        "required": true,
+                        "description": "The person to create.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "firstName": {
+                                    "type": "string"
+                                },
+                                "lastName": {
+                                    "type": "string"
+                                },
+                                "age": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            },
+                            "required": [
+                                "firstName",
+                                "lastName",
+                                "age"
+                            ]
+                        }
+                    }
+                ]
+				"responses": {
+                    "202": {
+                        "description": "ACCEPTED"
+                    }
+                }
+            }
+        }
+         "/person/{username}": {
+            "delete": {
+                "operationId": "delete_particular_person",
+                "summary": "Get list of Persons",
+                "description": "person particular"
+                "parameters": [
+					{
+						"name": "username",
+						"in": "path",
+						"required" : true,
+						"description": "Some description for offset",
+						"type": "string"
+					}
+				],
+				"responses": {
+                    "202": {
+                        "description": "ACCEPTED"
+                    }
+                }
+            }
+        }
+    
+    }
+} 
